@@ -19,3 +19,12 @@ exports.auth = async (req, res, next) => {
     res.status(401).json({msg: "Access denied. Invalid token"});
   }
 };
+
+exports.requireRole = (roles) => {
+  return (req, res, next) => {
+    if (!roles.includes(req.user.authentication.role)) {
+      return res.status(403).json({ msg: "Forbidden: Insufficient permissions" });
+    }
+    next();
+  };
+};

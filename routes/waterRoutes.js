@@ -6,6 +6,6 @@ const { auth } = require('../middlewares/auth');
 router.post('/', auth, createOrUpdateWater);
 router.get('/', auth, getWaterHistory);
 router.get("/:date", auth, getWaterByDate);
-router.get('/:id', auth, deleteWaterRecord);
+router.delete('/:id', auth, deleteWaterRecord);
 
 module.exports = router;

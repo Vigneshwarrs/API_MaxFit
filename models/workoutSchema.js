@@ -6,6 +6,11 @@ const workoutSchema = new mongoose.Schema({
         ref: 'User',
         required: true,
     },
+    type: {
+        type: String,
+        enum: ['cardio', 'strength', 'flexibility', 'hybrid'],
+        required: true
+    },
     exercises: [{
         exerciseId: {
             type: mongoose.Schema.Types.ObjectId,
@@ -16,7 +21,14 @@ const workoutSchema = new mongoose.Schema({
         sets: {type: Number, min: 0},
         reps: {type: Number, min:0},
         caloriesBurned: {type: Number, min:0},
+        intensity: {type: String, enum: ['low', 'moderate', 'high'], required: true},
     }],
+    notes: {
+        preWorkout: String,
+        postWorkout: String,
+        energyLevel: { type: Number, min: 1, max: 10 },
+        difficultyLevel: { type: Number, min: 1, max: 10 }
+    },
     date: {type: Date, default: Date.now}
 }, {timestamps: true});
 

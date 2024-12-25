@@ -1,11 +1,12 @@
 const express = require('express');
 const router = express.Router();
 const {createFood,getFoods,getFoodById,updateFood,deleteFood} = require('../controllers/foodController');
+const {auth, requireRole} = require('../middlewares/auth');
 
-router.post('/', createFood);
-router.get('/', getFoods);
-router.get('/:id',getFoodById);
-router.put('/:id', updateFood);
-router.delete('/:id', deleteFood);
+router.post('/', auth, requireRole(['admin']) , createFood);
+router.get('/', auth, requireRole(['admin']) , getFoods);
+router.get('/:id', auth, requireRole(['admin']) , getFoodById);
+router.put('/:id', auth, requireRole(['admin']) , updateFood);
+router.delete('/:id', auth, requireRole(['admin']) , deleteFood);
 
 module.exports = router;

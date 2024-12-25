@@ -62,21 +62,3 @@ exports.deleteGoal = async (req, res) => {
         res.status(500).json({ msg: "Server error during goal deletion." });
     }
 };
-
-exports.updateProgress = async (req, res) => {
-    try {
-        const goal = await fetchGoal(req.params.id, req.user._id);
-        if (!goal) return res.status(404).json({ msg: "Goal not found." });
-
-        goal.progress = req.body.progress;
-        if (goal.autoUpdateStreak) {
-            await goal.calculateStreak();
-        }
-
-        await goal.save();
-        res.status(200).json({ goal, msg: "Progress updated successfully!" });
-    } catch (err) {
-        console.error("Error updating progress:", err);
-        res.status(500).json({ msg: "Server error during progress update." });
-    }
-};

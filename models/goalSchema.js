@@ -12,6 +12,11 @@ const goalSchema = new mongoose.Schema({
         enum: ['Steps', 'Weight', 'Sleep', 'Water', 'Meal', 'Workout'],
         required: true
     },
+    type: {
+        type: String,
+        enum: ['primary', 'secondary'],
+        default: 'primary'
+    },
     target: {
         type: Number,
         required: true,
@@ -31,6 +36,14 @@ const goalSchema = new mongoose.Schema({
         default: 0,
         min: 0
     },
+    progressPercentage: { 
+        type: Number, 
+        min: 0, 
+        max: 100, 
+        default: function () {
+            return (this.progress / this.target) * 100;
+        } 
+    },
     status: {
         type: String, 
         enum: ['pending', 'in progress', 'completed'],
@@ -45,7 +58,6 @@ const goalSchema = new mongoose.Schema({
     }
 }, {timestamps: true});
 
-// Hook to update streak when progress is updated
 goalSchema.pre('save', async function(next) {
     try {
         if (this.isModified('progress')) {

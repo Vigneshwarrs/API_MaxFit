@@ -105,7 +105,7 @@ exports.createWeight = async (req, res) => {
 
 exports.getWeight = async (req, res) => {
     try{
-        const {userId} = req.params;
+        const userId = req.user._id;
         const weight = await Weight.findOne({userId});
         if(!weight)
             return res.status(404).json({msg: 'Weight data not found.'});

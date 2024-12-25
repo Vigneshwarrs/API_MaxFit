@@ -10,7 +10,7 @@ exports.createOrUpdateWater = async (req, res) => {
             if(dailyGoal)
                 water.dailyGoal = dailyGoal;
             if(intakeEntries)
-                water.intakeEntries = intakeEntries;
+                water.intakeEntries.push(...intakeEntries);
         }else {
             water = new Water({
                 userId,

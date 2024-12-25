@@ -9,7 +9,7 @@ exports.updateStreak = async (req, res) => {
     console.error("Error in updateStreak controller:", err);
     return res.status(500).json({
       success: false,
-      msg: `Error updating streak ${err.message}`,
+      msg: `Error updating streak: ${err.message}`,
     });
   }
 };
@@ -24,7 +24,20 @@ exports.getStreakStat = async (req, res) => {
     console.error("Error in getStreakStats controller:", err);
     return res.status(500).json({
       success: false,
-      msg: `Error getting streak stats ${err.message}`,
+      msg: `Error getting streak stats: ${err.message}`,
+    });
+  }
+};
+
+exports.getAllStreaks = async (req, res) => {
+  try {
+    const streaks = await streakService.getAllStreaks(req.user._id);
+    res.status(200).json({ success: true, data: streaks });
+  } catch (err) {
+    console.error("Error in getAllStreaks controller:", err);
+    return res.status(500).json({
+      success: false,
+      msg: `Error getting all streaks: ${err.message}`,
     });
   }
 };

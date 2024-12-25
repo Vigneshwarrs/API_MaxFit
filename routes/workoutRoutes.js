@@ -6,7 +6,7 @@ const { auth } = require('../middlewares/auth');
 router.post('/', auth, createWorkout);
 router.get('/:id', auth, getWorkoutById);
 router.get('/', auth, getWorkouts);
-router.get('/', auth, getWorkoutStats);
+router.get('/stats', auth, getWorkoutStats);
 router.put('/:id', auth, updateWorkout);
 router.delete('/:id', auth, deleteWorkout);
 

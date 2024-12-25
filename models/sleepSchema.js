@@ -12,6 +12,10 @@ const sleepSchema = new mongoose.Schema(
     wakeTime: { type: Date, required: true },
     duration: { type: Number, required: true },
     quality: { type: Number, min: 1, max: 10, required: true },
+    wakeEvents: [{ time: Date, duration: Number, reason: String }],
+    sleepScore: { type: Number, default: function () {
+      return this.duration * this.quality / 10;
+    }},
     mood: {
       type: String,
       enum: [

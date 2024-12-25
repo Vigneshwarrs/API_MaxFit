@@ -30,6 +30,15 @@ const mealSchema = new mongoose.Schema(
       default: Date.now,
       index: true, 
     },
+    totalCalories: { type: Number, default: 0 },
+    customFoodItems: [{
+      name: { type: String, required: true },
+      calories: { type: Number, required: true },
+      protein: { type: Number },
+      carbs: { type: Number },
+      fats: { type: Number },
+      quantity: { type: Number, required: true }
+    }],
   },
   { 
     timestamps: true,

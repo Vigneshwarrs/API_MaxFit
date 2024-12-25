@@ -14,7 +14,12 @@ const waterSchema = new mongoose.Schema({
     intakeEntries: [{
         amount: {type: Number, required: true, min:250},
         unit: {type: String, enum: ['ml','oz','l'], default: 'ml'},
-        source: {type: String, enum: ['water', 'tea', 'coffee', 'juice']}
+        source: {type: String, enum: ['water', 'tea', 'coffee', 'juice']},
+        timeOfDay: {
+            type: String,
+            enum: ['morning', 'afternoon', 'evening', 'night'],
+            required: true
+        },
     }],
     dailyStats: {
         totalIntake: {type: Number, default: 0},

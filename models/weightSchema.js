@@ -32,10 +32,25 @@ const weightSchema = new mongoose.Schema({
             date: Date
         }],
         weightTrend: {
+            status: {
+                type: String,
+                enum: ['gaining', 'losing', 'stable'],
+                default: 'stable'
+            },
             weekly: Number,
             monthly: Number
         }
-    }
+    },
+    goals: {
+        targetWeight: {
+            value: Number,
+            unit: { type: String, enum: ['kg', 'lbs'] },
+            deadline: Date
+        },
+        weeklyGoal: { type: Number, min: 0 },
+    },
+
+
 }, {timestamps: true});
 
 module.exports = mongoose.model('Weight', weightSchema);
