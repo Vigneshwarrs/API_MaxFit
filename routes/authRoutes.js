@@ -1,7 +1,6 @@
 const express = require('express');
 const router = express.Router();
 const {login, register, forgotPassword, resetPassword, activate} = require('../controllers/authController');
-const { ro } = require('date-fns/locale');
 
 router.post('/login', login);
 router.post('/register', register);
