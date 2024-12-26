@@ -8,4 +8,4 @@ router.get('/activate/:token', activate);
 router.post('/forgot-password', forgotPassword);
 router.post('/reset-password/:token',resetPassword);
 
-module.exports = router;    
+module.exports = router;
