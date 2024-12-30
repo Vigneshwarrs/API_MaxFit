@@ -15,7 +15,7 @@ exports.getFoods = async (req, res) => {
     try{
         const foods = await Food.find();
         
-        res.stats(200).json({foods, msg:"Foods retrived!"});
+        res.status(200).json({foods, msg:"Foods retrived!"});
     }catch(err) {
         res.status(500).json({msg: `Server error during get food. Error is ${err}`});
     }

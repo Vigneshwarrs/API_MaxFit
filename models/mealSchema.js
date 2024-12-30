@@ -10,7 +10,7 @@ const mealSchema = new mongoose.Schema(
       index: true,
     },
     name: { type: String, trim: true },
-    mealType: { 
+    type: { 
       type: String, 
       enum: ["breakfast", "lunch", "dinner", "snack"],
       index: true,

@@ -10,7 +10,7 @@ const sanitizeUser = (user) => {
 
 exports.updateUser = async (req, res) => {
   try {
-    const { age, picture, gender, height, weight, address, activityLevel } = req.body;
+    const { age, picture, gender, height, weight, country, activityLevel } = req.body;
     const user = await User.findById(req.user._id);
 
     if (age) user.personalInfo.age = age;
@@ -18,7 +18,7 @@ exports.updateUser = async (req, res) => {
     if (gender) user.personalInfo.gender = gender;
     if (height) user.physicalMetrics.height = height;
     if (weight) user.physicalMetrics.weight = weight;
-    if (address) user.personalInfo.address = address;
+    if (country) user.personalInfo.country = country;
     if (activityLevel) user.personalInfo.activityLevel = activityLevel;
 
     user.accountStatus.isCompleted = !!(

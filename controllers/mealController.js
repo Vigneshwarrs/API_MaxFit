@@ -3,14 +3,13 @@ const Food = require('../models/foodSchema');
 
 exports.createOrUpdateMeal = async (req, res) => {
   try {
-    const { mealType, foodItems, customFoodItems } = req.body;
+    const { type, foodItems, customFoodItems } = req.body;
     const userId = req.user._id;
     const date = new Date(req.body.date || Date.now()).setHours(0, 0, 0, 0);
     
-    const existingMeal = await Meal.findOne({ userId, date, mealType });
+    const existingMeal = await Meal.findOne({ userId, date, type });
 
     if (existingMeal) {
-      // Handle regular food items
       foodItems?.forEach((food) => {
         const meal = existingMeal.foodItems.find(
           (item) => item.foodId.toString() === food.foodId
@@ -22,7 +21,6 @@ exports.createOrUpdateMeal = async (req, res) => {
         }
       });
 
-      // Handle custom food items
       if (customFoodItems?.length) {
         if (!existingMeal.customFoodItems) {
           existingMeal.customFoodItems = [];
@@ -30,10 +28,8 @@ exports.createOrUpdateMeal = async (req, res) => {
         existingMeal.customFoodItems.push(...customFoodItems);
       }
 
-      // Calculate total calories
       let totalCalories = 0;
 
-      // Calculate calories from regular food items
       for (const item of existingMeal.foodItems) {
         const food = await Food.findById(item.foodId);
         if (food?.nutritionalInfo?.calories) {
@@ -41,7 +37,6 @@ exports.createOrUpdateMeal = async (req, res) => {
         }
       }
 
-      // Add calories from custom food items
       totalCalories += existingMeal.customFoodItems?.reduce((sum, item) => 
         sum + (item.calories * item.quantity), 0) || 0;
 
@@ -51,10 +46,8 @@ exports.createOrUpdateMeal = async (req, res) => {
       return res.status(200).json({ meal: existingMeal, msg: "Meals updated!" });
     } 
     
-    // Create new meal
     let totalCalories = 0;
 
-    // Calculate calories from regular food items
     if (foodItems?.length) {
       for (const item of foodItems) {
         const food = await Food.findById(item.foodId);
@@ -64,7 +57,6 @@ exports.createOrUpdateMeal = async (req, res) => {
       }
     }
 
-    // Add calories from custom food items
     if (customFoodItems?.length) {
       totalCalories += customFoodItems.reduce((sum, item) => 
         sum + (item.calories * item.quantity), 0);
@@ -73,7 +65,7 @@ exports.createOrUpdateMeal = async (req, res) => {
     const meal = new Meal({ 
       userId, 
       date, 
-      mealType, 
+      type, 
       foodItems: foodItems || [],
       customFoodItems: customFoodItems || [],
       totalCalories: Math.round(totalCalories * 100) / 100
@@ -119,11 +111,9 @@ exports.updateMeal = async (req, res) => {
   try {
     const updates = { ...req.body };
     
-    // If updating food items or custom food items, recalculate total calories
     if (updates.foodItems || updates.customFoodItems) {
       let totalCalories = 0;
 
-      // Calculate calories from regular food items
       if (updates.foodItems?.length) {
         for (const item of updates.foodItems) {
           const food = await Food.findById(item.foodId);
@@ -133,7 +123,6 @@ exports.updateMeal = async (req, res) => {
         }
       }
 
-      // Add calories from custom food items
       if (updates.customFoodItems?.length) {
         totalCalories += updates.customFoodItems.reduce((sum, item) => 
           sum + (item.calories * item.quantity), 0);

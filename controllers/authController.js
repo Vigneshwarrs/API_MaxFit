@@ -14,11 +14,11 @@ exports.login = async (req, res) => {
         const user = await User.findOne({"authentication.email": email});
     
         if(!user)
-            res.status(404).json({msg: "User not found. Please create an account"});
+            return res.status(404).json({msg: "User not found. Please create an account"});
         if(!user.compare(password))
-            res.status(401).json({msg: "Invalid credentials"});
+            return res.status(401).json({msg: "Invalid credentials"});
         if(!user.accountStatus.isActive)
-            res.status(401).json({msg: "Please Verify your account. Check your email"});
+            return res.status(401).json({msg: "Please Verify your account. Check your email"});
     
         const token = generateToken(user);
         const userResponse = user.toObject();
@@ -32,7 +32,7 @@ exports.login = async (req, res) => {
 
 exports.register = async (req, res) => {
     try{
-        const {name, email, password} = req.body;
+        const { name, age, gender, country, activityLevel, height, weight, email, password, picture } = req.body;
         const user = await User.findOne({"authentication.email": email});
 
         if(user) 
@@ -41,10 +41,25 @@ exports.register = async (req, res) => {
         const token = await crypto.randomBytes(32).toString('hex');
 
         const newUser = new User({
-            "personalInfo.name": name,
-            "authentication.email": email,
-            "authentication.password": password,
-            "accountStatus.activateToken": token
+            personalInfo: {
+                name,
+                age,
+                gender,
+                country,
+                picture,
+                activityLevel
+            },
+            physicalMetrics: {
+                height: {value: height.value, unit: height.unit},
+                weight: {value: weight.value, unit: weight.unit}
+            },
+            authentication: {
+                email,
+                password,
+            },
+            accountStatus: {
+                activateToken: token
+            }
         });
         await newUser.save();
         await sendMail({
@@ -85,16 +100,16 @@ exports.forgotPassword = async (req, res) => {
         if(!user)
             return res.status(404).json({ message: "User not found" });
 
-        const token = crypto.randomBytes(32).toString('hex');
+        const token = await crypto.randomBytes(32).toString('hex');
         user.accountStatus.resetToken = token;
-        user.accountStatus.resetTokenExpire = Date.now() + 6000000;
+        user.accountStatus.resetTokenExpire = new Date(Date.now).getTime() + 6000000;
 
         await user.save();
 
         await sendMail({
             to: user.authentication.email,
             subject: 'Password Reset',
-            message: `Please reset your password by clicking on the following link: ${process.env.BASE_URL}/reset-password/${resetToken}`
+            message: `Please reset your password by clicking on the following link: ${process.env.BASE_URL}/auth/reset-password/${token}`
         });
 
         res.status(200).json({ msg: "Password reset link sent to your email" });
@@ -108,12 +123,10 @@ exports.resetPassword = async (req, res) => {
         const {token} = req.params;
         const {password} = req.body;
 
-        const user = await User.findOne({"accountStatus.passwordResetToken": token});
-        const isExpried = Date.now() > new Date(user.accountStatus.resetTokenExpire).getTime();
-        if(!user)
-            return res.status(404).json({ msg: "Invalid reset token" });
-        if(!isExpried)
-            return res.status(401).json({ msg: "Reset token has expired" });
+        const user = await User.findOne({"accountStatus.resetToken": token});
+        const isExpired = new Date(Date.now()).getTime() > user?.accountStatus?.resetTokenExpire;
+        if(!user || isExpired)
+            return res.status(403).json({ msg: 'Invalid or expired reset token.' });
 
         user.authentication.password = password;
         user.accountStatus.resetToken = null;
@@ -124,5 +137,6 @@ exports.resetPassword = async (req, res) => {
         res.status(200).json({msg: "Password reset successfully!"});
     }catch(err) {
         res.status(500).json({msg: `Server error during reset password. Error is: ${err}`});
+        console.log(err);
     }
 }
